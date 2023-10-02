@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Markdown to Table Converter</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <style>
+        #markdownInput {
+            width: 100%;
+            height: 300px;
+        }
+
+        .center-div {
+            margin: auto;
+            width: 60%;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Markdown to Table Converter</h1>
+        <div class="center-div">
+            <textarea id="markdownInput" class="form-control">
+| Header 1 | Header 2 | Header 3 |
+|----------|----------|----------|
+| Data 1   | Data 2   | Data 3   |
+| Data 4   | Data 5   | Data 6   |
+                  </textarea><br>
+            <button onclick="convertToTable()" class="btn btn-primary">Convert to Table</button>
+            <button onclick="saveAsImage()" class="btn btn-secondary">Save Table as Image</button>
+        </div>
+        <div id="tableContainer" class="mt-4"></div>
+    </div>
+    <footer class="text-center mt-5">
+        <p>Yet another useless tool by <a href="https://www.linkedin.com/in/stan-chen/" target="_blank">stancsz</a></p>
+        <p>Find me on <a href="https://www.linkedin.com/in/stan-chen/" target="_blank">LinkedIn</a> | <a
+                href="https://github.com/stancsz" target="_blank">GitHub</a></p>
+    </footer>
+
+    <script>
+        function convertToTable() {
+            const markdown = document.getElementById('markdownInput').value;
+            const lines = markdown.split('\n').filter(line => !/^[-| ]+$/.test(line));
+            let tableArray = [];
+
+            lines.forEach((line) => {
+                const cells = line.split('|').map(cell => cell.trim());
+                if (cells.length > 1) {
+                    tableArray.push(cells);
+                }
+            });
+
+            // Remove empty rows and columns from the edges
+            while (tableArray.length && tableArray[0].every(cell => !cell)) {
+                tableArray.shift();
+            }
+            while (tableArray.length && tableArray[tableArray.length - 1].every(cell => !cell)) {
+                tableArray.pop();
+            }
+            while (tableArray[0].length && tableArray.every(row => !row[0])) {
+                tableArray.forEach(row => row.shift());
+            }
+            while (tableArray[0].length && tableArray.every(row => !row[row.length - 1])) {
+                tableArray.forEach(row => row.pop());
+            }
+
+            // Generate HTML table
+            let tableHTML = '<table class="table table-bordered">';
+            tableArray.forEach((row) => {
+                tableHTML += '<tr>';
+                row.forEach((cell) => {
+                    tableHTML += `<td>${cell}</td>`;
+                });
+                tableHTML += '</tr>';
+            });
+            tableHTML += '</table>';
+
+            document.getElementById('tableContainer').innerHTML = tableHTML;
+        }
+
+        function saveAsImage() {
+            const table = document.querySelector('table');
+            html2canvas(table).then((canvas) => {
+                const imgData = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = imgData;
+                link.download = 'table.png';
+                link.click();
+            });
+        }
+    </script>
+</body>
+
+</html>
