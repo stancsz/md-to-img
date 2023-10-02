@@ -3,6 +3,7 @@
 ## Description
 
 This is a simple web-based tool that converts Markdown-formatted tables into HTML tables. It also allows you to save the HTML table as an image.
+Deployed app: https://stancsz.github.io/md-to-img/
 
 ## Features
 
